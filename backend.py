@@ -2,6 +2,7 @@ import os
 import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent, AgentType
@@ -11,6 +12,7 @@ from langchain_community.utilities import WikipediaAPIWrapper, ArxivAPIWrapper, 
 from langdetect import detect
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv, find_dotenv
+from starlette.responses import JSONResponse
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -122,3 +124,18 @@ async def chat(req: ChatRequest):
     response_text = response["output"] if isinstance(response, dict) and "output" in response else str(response)
     final_response = translate_back(response_text, original_lang)
     return {"reply": final_response, "detectedLang": original_lang, "translatedQuery": translated_query}
+
+
+@app.get("/")
+async def index():
+    file_path = os.path.join(os.path.dirname(__file__), "index.html")  # or "gggg.html"
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return {"error": "index.html not found"}
+
+@app.get("/favicon.ico")
+async def favicon():
+    file_path = os.path.join(os.path.dirname(__file__), "favicon.ico")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return JSONResponse(status_code=404, content={"error": "favicon.ico not found"})
