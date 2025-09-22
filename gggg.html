@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RootSource AI Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&family=Montserrat:ital@1&display=swap" rel="stylesheet">
+<style>
+body {
+    margin: 0; font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+                url("https://assets.science.nasa.gov/dynamicimage/assets/science/esd/multimedia/images-of-change/FestiveFields_NC_20141019_after_2048px-95.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    padding-top: 20px;
+}
+.chat-container {
+    width: 400px; max-height: 90vh;
+    background: rgba(255,255,255,0.1);
+    border-radius: 25px; padding: 20px;
+    display: flex; flex-direction: column;
+    overflow: hidden; backdrop-filter: blur(5px);
+}
+.logo-container { text-align: center; margin-bottom: 10px; }
+.logo-container img { width: 200px; border-radius: 15px; }
+h1,h2 { text-align: center; color: white; margin: 5px 0; font-family: 'Dosis', sans-serif; }
+.messages { flex: 1; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; }
+.message { padding: 10px 15px; border-radius: 15px; max-width: 80%; word-wrap: break-word; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.message.user { background: #DCF8C6; align-self: flex-end; }
+.message.assistant { background: #F1F0F0; color: black; align-self: flex-start; }
+.input-area { display: flex; gap: 10px; }
+.input-area input { flex: 1; padding: 12px 15px; border-radius: 25px; border: none; outline: none; }
+.input-area button { padding: 12px 20px; border: none; border-radius: 25px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+.input-area button:hover { background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%); }
+</style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="logo-container">
+        <img src="RootSourcelogo.png" alt="RootSource AI Logo" onerror="this.style.display='none';">
+    </div>
+    <h1>RootSource AI</h1>
+    <h2>Ask your farming questions in any language!</h2>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Type your question here..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startVoice()">🎤</button>
+    </div>
+</div>
+
+<script>
+const messagesDiv = document.getElementById("messages");
+
+function addMessage(content, role) {
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", role);
+    msgDiv.textContent = content;
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Send text message to backend
+async function sendMessage() {
+    const userInput = document.getElementById("userInput");
+
+    
+    const text = userInput.value.trim();
+    if(!text) return;
+    addMessage(text, "user");
+    userInput.value = "";
+
+    try {
+        const response = await fetch("http://localhost:8000/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ message: text })
+        });
+        const data = await response.json();
+        addMessage(data.reply, "assistant");
+    } catch(err) {
+        addMessage("Error: Could not connect to server.", "assistant");
+    }
+}
+
+// --- Voice Input ---
+function startVoice() {
+    if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+        alert("Your browser does not support speech recognition.");
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+    recognition.onresult = (event) => {
+        const spokenText = event.results[0][0].transcript;
+        document.getElementById("userInput").value = spokenText;
+        sendMessage();
+    };
+}
+
+
+</script>
+</body>
+</html>
