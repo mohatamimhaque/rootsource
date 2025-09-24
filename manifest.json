@@ -1,0 +1,39 @@
+{
+  "name": "RootSource AI - Multilingual Farming Assistant",
+  "short_name": "RootSource AI",
+  "description": "Ask your farming-related questions in any language, and get accurate answers! AI-powered agricultural assistant supporting 90+ languages.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "education",
+    "utilities"
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "screenshots": [
+    {
+      "src": "assets/screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "RootSource AI Chat Interface"
+    }
+  ]
+}

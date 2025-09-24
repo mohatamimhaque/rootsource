@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://github.com/mohatamimhaque/rootsource/sitemap.xml
+
+# Important pages
+Allow: /
+Allow: /assets/
+Allow: /favicon.ico
+Allow: /manifest.json
+
+# Block sensitive files
+Disallow: /.env
+Disallow: /.git/
+Disallow: /__pycache__/
+Disallow: /.venv/
+
+# Crawl delay (optional)
+Crawl-delay: 1
